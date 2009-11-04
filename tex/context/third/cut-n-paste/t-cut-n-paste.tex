@@ -1,0 +1,255 @@
+%D \module
+%D   [       file=t-cut-N-paste,
+%D        version=2009.11.10,
+%D          title=Cut and paste pages together,
+%D       subtitle=\CONTEXT\ module,
+%D         author=Aditya Mahajan,
+%D           date=\currentdate,
+%D      copyright=Aditya Mahajan]
+%C
+%C Copyright 2009 Aditya Mahajan 
+%C This file may be distributed under the GNU General Public License v. 2.0.
+
+\startmodule[cut-N-paste]
+\writestatus{loading}{cut-N-paste module}
+\unprotect
+
+\setupcolors[state=start]
+
+%D \MP\ graphics to draw a background grid and to draw the regions that will be
+%D cut.
+
+\startMPinclusions[+]
+  vardef CNPdrawgrid(expr xaxis, yaxis, sep, lwd, col) =
+    for i = 0 upto OverlayWidth/sep :
+      draw yaxis shifted (i*sep,0) withcolor col withpen pencircle scaled lwd;
+    endfor; 
+
+    for i = 0 upto OverlayHeight/sep :
+      draw xaxis shifted (0,OverlayHeight - i*sep) withcolor col withpen pencircle scaled lwd;
+    endfor; 
+  enddef ;
+\stopMPinclusions
+
+\startuseMPgraphic{cnp:grid}
+  save xaxis, yaxis ; path xaxis, yaxis ;
+  xaxis := bottomboundary OverlayBox ;
+  yaxis := leftboundary   OverlayBox ;
+
+  CNPdrawgrid (xaxis, yaxis, 0.1in, 0.1*\MPvar\c!rulethickness, \MPcolor{\MPvar{\c!grid\c!color}}) ;
+  CNPdrawgrid (xaxis, yaxis, 0.5in, 0.5*\MPvar\c!rulethickness, \MPcolor{\MPvar{\c!grid\c!color}}) ;
+  CNPdrawgrid (xaxis, yaxis, 1in,   1.0*\MPvar\c!rulethickness, \MPcolor{\MPvar{\c!grid\c!color}}) ;
+
+  draw unitsquare xyscaled (\MPvar\c!width, \MPvar\c!height) 
+       shifted (\MPvar\c!hoffset, OverlayHeight - \MPvar\c!height - \MPvar\c!voffset) 
+       withcolor \MPcolor{\MPvar\c!framecolor}
+       withpen pencircle scaled (2*\MPvar\c!rulethickness) ;
+
+  \ifconditional\cut!n!paste!span
+
+  draw unitsquare xyscaled (\MPvar{\c!width}, \MPvar{\c!span\c!height}) 
+       shifted (\MPvar{\c!hoffset}, OverlayHeight - \MPvar{\c!span\c!height} - \MPvar{\c!span\c!voffset}) 
+       withcolor \MPcolor{\MPvar{\c!span\c!framecolor}}
+       withpen pencircle scaled (2*\MPvar{\c!span\c!rulethickness}) ;
+  \fi
+
+  setbounds currentpicture to OverlayBox ;
+
+\stopuseMPgraphic
+
+\defineoverlay[cnp:grid]  [\useMPgraphic{cnp:grid}]
+
+
+%D Name space
+
+\def\????cnp    {@@@@cnp}
+\def\c!span {span}
+
+\newconditional\cut!n!paste!span      \setfalse\cut!n!paste!span
+\newconditional\cut!n!paste!topspan     \settrue\cut!n!paste!topspan
+
+%D Parameters
+\def\cut!n!paste!pageparamter#1% pagenum parameter
+  {\ifcsname\????cnp\cut!n!paste!currentpage#1\endcsname
+     \csname\????cnp\cut!n!paste!currentpage#1\endcsname
+    \else
+       \ifcsname\????cnp\v!oddeven\cut!n!paste!currentpage#1\endcsname
+         \csname\????cnp\v!oddeven\cut!n!paste!currentpage#1\endcsname
+       \else
+         \ifcsname\????cnp#1\endcsname
+           \csname\????cnp#1\endcsname
+          \else
+            \s!empty
+     \fi\fi\fi}
+
+%D Setup
+\def\setupcutNpaste%
+  {\dodoubleargument\dosetupcutNpaste}
+
+\def\dosetupcutNpaste[#1][#2]%
+  {\doifelsenothing{#2}
+    {\getparameters[\????cnp][#1]}
+    {\processaction
+      [#2]
+      [     \v!odd=>{\getparameters[\????cnp#1][#2]},%
+           \v!even=>{\getparameters[\????cnp#1][#2]},%
+        \v!unknown=>{\dodosetupcutNpaste[#1][#2]}]}}
+
+\def\dodosetupcutNpaste[#1][#2]%
+  {\def\redosetupcutNpaste##1%
+    {\getparameters[\????cnp##1][#2]}%
+  \processcommalist[#1]\redosetupcutNpaste}
+
+%D Expr
+
+\def\cut!n!paste!span!voffset
+  {\ifconditional\cut!n!paste!topspan
+     \cut!n!paste!pageparamter\c!voffset
+   \else
+     \the\dimexpr\cut!n!paste!pageparamter\c!voffset
+     +\cut!n!paste!pageparamter\c!height
+     -\cut!n!paste!pageparamter{\c!span\c!height}\relax
+    \fi}
+
+\def\cut!n!paste!height
+  {\ifconditional\cut!n!paste!span
+     \the\dimexpr\cut!n!paste!pageparamter\c!height
+     -\cut!n!paste!pageparamter{\c!span\c!height}\relax
+   \else
+     \cut!n!paste!pageparamter\c!height
+  \fi}
+
+\def\cut!n!paste!hoffset
+  {\the\dimexpr\cut!n!paste!pageparamter\c!hoffset
+  +\cut!n!paste!pagewidth*(\recurselevel-1)\relax}
+
+\def\cut!n!paste!voffset
+  {\ifconditional\cut!n!paste!span
+     \ifconditional\cut!n!paste!topspan
+          \the\dimexpr\cut!n!paste!pageparamter\c!voffset
+          +\cut!n!paste!pageparamter{\c!span\c!height}\relax
+      \else
+        \cut!n!paste!pageparamter\c!voffset
+     \fi
+     \else
+       \cut!n!paste!pageparamter\c!voffset
+   \fi}
+
+\def\cut!n!paste!pagewidth
+  {\the\dimexpr\cut!n!paste!pageparamter\c!width
+   /\cut!n!paste!pageparamter\c!n\relax}
+
+% Insrert pages
+
+\def\cut!n!paste!insertpage%
+  {\ifconditional\cut!n!paste!span
+    \startTEXpage
+      \clip
+        [   \c!width=\cut!n!paste!pageparamter\c!width,
+           \c!height=\cut!n!paste!pageparamter{\c!span\c!height},
+          \c!hoffset=\cut!n!paste!pageparamter\c!hoffset,
+          \c!voffset=\cut!n!paste!span!voffset]
+        {\externalfigure[cnp:name][\c!page=]}
+    \stopTEXpage
+  \fi
+  \dorecurse{\cut!n!paste!pageparamter\c!n}
+  {\startTEXpage
+      \clip
+      [   \c!width=\cut!n!paste!pagewidth,
+         \c!height=\cut!n!paste!height,
+        \c!hoffset=\cut!n!paste!hoffset,
+        \c!voffset=\cut!n!paste!voffset]
+        {\rotate
+          [\c!rotation=\cut!n!paste!pageparamter\c!rotation]
+           {\externalfigure[cnp:name][\c!page=\cut!n!paste!currentpage]}}
+     \stopTEXpage}}
+
+\def\cut!n!paste!inserttestpage%
+   {\setupMPvariables
+      [cnp:grid]
+      [              \c!width=\cut!n!paste!pageparamter\c!width,
+                    \c!height=\cut!n!paste!height,
+                   \c!hoffset=\cut!n!paste!pageparamter\c!hoffset,
+                   \c!voffset=\cut!n!paste!voffset,
+              \c!grid\c!color=\cut!n!paste!pageparamter{\c!grid\c!color},
+                \c!framecolor=\cut!n!paste!pageparamter\c!framecolor,
+             \c!rulethickness=\cut!n!paste!pageparamter\c!rulethickness,
+             \c!span\c!height=\cut!n!paste!pageparamter{\c!span\c!height},
+            \c!span\c!voffset=\cut!n!paste!span!voffset,
+         \c!span\c!framecolor=\cut!n!paste!pageparamter{\c!span\c!framecolor},
+      \c!span\c!rulethickness=\cut!n!paste!pageparamter{\c!span\c!rulethickness}]
+   %
+   \startTEXpage[\c!background={\v!foreground,cnp:grid}]
+    \rotate[\c!rotation=\cut!n!paste!pageparamter\c!rotation]
+      {\externalfigure[cnp:name][\c!page=\cut!n!paste!currentpage]}
+   \stopTEXpage}
+
+%D Initialize Parameters
+
+\def\cut!n!paste!initializeparameters
+  {\doifelse{\cut!n!paste!pageparamter\c!span}\v!yes
+    {\settrue\cut!n!paste!span
+     \doifelse{\cut!n!paste!pageparamter{\c!span\c!location}}\v!top
+      {\settrue\cut!n!paste!topspan}
+      {\setfalse\cut!n!paste!topspan}}
+    {\setfalse\cut!n!paste!span}}
+
+\def\cut!n!paste!initializepagecount
+ {\doifsomethingelse\@@@@cnpstop
+    {\edef\cut!n!paste!stoppage{\@@@@cnpstop}}
+    {\edef\cut!n!paste!stoppage{\cut!n!paste!NOfpages}}%
+  \doifsomethingelse\@@@@cnpstart
+    {\edef\cut!n!paste!startpage{\@@@@cnpstart}}
+    {\edef\cut!n!paste!startpage{\plusone}}}
+
+%D place pages
+
+\def\cut!n!paste!placepages
+  {\cut!n!paste!initializepagecount
+   \dostepwiserecurse\cut!n!paste!startpage\cut!n!paste!stoppage\plusone
+    {\edef\cut!n!paste!currentpage{\recurselevel}%
+     \cut!n!paste!initializeparameters
+     \cut!n!paste!insertpage}}
+
+\def\cut!n!paste!placetestpages
+  {\cut!n!paste!initializepagecount
+   \dostepwiserecurse\cut!n!paste!startpage\cut!n!paste!stoppage\plusone
+    {\edef\cut!n!paste!currentpage{\recurselevel}%
+     \cut!n!paste!initializeparameters
+     \cut!n!paste!inserttestpage}}
+
+\def\placecutNpaste
+  {\dosingleargument\doplacecutNpaste}
+
+\def\doplacecutNpaste[#1]%
+  {\setupcutNpaste[#1]%
+   \useexternalfigure[cnp:name][\@@@@cnpname]%
+   \getfiguredimensions[cnp:name]%
+   \edef\cut!n!paste!NOfpages{\noffigurepages}%
+   \doifelse\@@@@cnpoption\v!test
+     \cut!n!paste!placetestpages
+     \cut!n!paste!placepages}
+
+
+\setupcutNpaste
+  [\c!option=,
+   \c!n=1,
+   \c!start=,
+   \c!stop=,
+   \c!width=\overlaywidth,
+   \c!height=\overlayheight,
+   \c!rotation=\!!zerocount,
+   \c!hoffset=\!!zeropoint,
+   \c!voffset=\!!zeropoint,
+   \c!grid\c!color=green,
+   \c!framecolor=red,
+   \c!rulethickness=1bp,
+   \c!span=\v!no,
+   \c!span\c!height=\cut!n!paste!pageparamter\c!height,
+   \c!span\c!location=\v!top,
+   \c!span\c!framecolor=blue,
+   \c!span\c!rulethickness=1bp,
+   \c!name=]
+
+\protect
+\stopmodule
