@@ -45,6 +45,19 @@
        withcolor \MPcolor{\MPvar\c!framecolor}
        withpen pencircle scaled (2*\MPvar\c!rulethickness) ;
 
+  save divider ; path divider ;
+  divider := (0,0) -- (0, \MPvar\c!height) ;
+  save sep ; sep := \MPvar\c!width / \MPvar\c!n ;
+
+  for i = 1 upto \MPvar\c!n - 1 :
+    draw divider
+         shifted (\MPvar\c!hoffset + i*sep, 
+                  OverlayHeight - \MPvar\c!height - \MPvar\c!voffset) 
+     withcolor \MPcolor{\MPvar\c!framecolor}
+     withpen pencircle scaled (2*\MPvar\c!rulethickness) ;
+  endfor 
+       
+
   \ifconditional\cut!n!paste!span
 
   draw unitsquare xyscaled (\MPvar{\c!width}, \MPvar{\c!span\c!height}) 
@@ -149,7 +162,7 @@
            \c!height=\cut!n!paste!pageparamter{\c!span\c!height},
           \c!hoffset=\cut!n!paste!pageparamter\c!hoffset,
           \c!voffset=\cut!n!paste!span!voffset]
-        {\externalfigure[cnp:name][\c!page=]}
+        {\externalfigure[cnp:name][\c!page=\cut!n!paste!currentpage]}
     \stopTEXpage
   \fi
   \dorecurse{\cut!n!paste!pageparamter\c!n}
@@ -171,6 +184,7 @@
                     \c!height=\cut!n!paste!height,
                    \c!hoffset=\cut!n!paste!pageparamter\c!hoffset,
                    \c!voffset=\cut!n!paste!voffset,
+                         \c!n=\cut!n!paste!pageparamter\c!n,
               \c!grid\c!color=\cut!n!paste!pageparamter{\c!grid\c!color},
                 \c!framecolor=\cut!n!paste!pageparamter\c!framecolor,
              \c!rulethickness=\cut!n!paste!pageparamter\c!rulethickness,
