@@ -70,7 +70,13 @@
 
 \stopuseMPgraphic
 
+\startuseMPgraphic{cnp:text}
+  label.bot(textext("\MPvar\c!text"), \MPvar\c!location) ;
+  setbounds currentpicture to OverlayBox ;
+\stopuseMPgraphic
+
 \defineoverlay[cnp:grid]  [\useMPgraphic{cnp:grid}]
+\defineoverlay[cnp:text]  [\useMPgraphic{cnp:text}]
 
 
 %D Name space
@@ -82,7 +88,7 @@
 \newconditional\cut!n!paste!topspan     \settrue\cut!n!paste!topspan
 
 %D Parameters
-\def\cut!n!paste!pageparamter#1% pagenum parameter
+\def\cut!n!paste!pageparameter#1% pagenum parameter
   {\ifcsname\????cnp\cut!n!paste!currentpage#1\endcsname
      \csname\????cnp\cut!n!paste!currentpage#1\endcsname
     \else
@@ -117,96 +123,99 @@
 
 \def\cut!n!paste!span!voffset
   {\ifconditional\cut!n!paste!topspan
-     \cut!n!paste!pageparamter\c!voffset
+     \cut!n!paste!pageparameter\c!voffset
    \else
-     \the\dimexpr\cut!n!paste!pageparamter\c!voffset
-     +\cut!n!paste!pageparamter\c!height
-     -\cut!n!paste!pageparamter{\c!span\c!height}\relax
+     \the\dimexpr\cut!n!paste!pageparameter\c!voffset
+     +\cut!n!paste!pageparameter\c!height
+     -\cut!n!paste!pageparameter{\c!span\c!height}\relax
     \fi}
 
 \def\cut!n!paste!height
   {\ifconditional\cut!n!paste!span
-     \the\dimexpr\cut!n!paste!pageparamter\c!height
-     -\cut!n!paste!pageparamter{\c!span\c!height}\relax
+     \the\dimexpr\cut!n!paste!pageparameter\c!height
+     -\cut!n!paste!pageparameter{\c!span\c!height}\relax
    \else
-     \cut!n!paste!pageparamter\c!height
+     \cut!n!paste!pageparameter\c!height
   \fi}
 
 \def\cut!n!paste!hoffset
-  {\the\dimexpr\cut!n!paste!pageparamter\c!hoffset
+  {\the\dimexpr\cut!n!paste!pageparameter\c!hoffset
   +\cut!n!paste!pagewidth*(\recurselevel-1)\relax}
 
 \def\cut!n!paste!voffset
   {\ifconditional\cut!n!paste!span
      \ifconditional\cut!n!paste!topspan
-          \the\dimexpr\cut!n!paste!pageparamter\c!voffset
-          +\cut!n!paste!pageparamter{\c!span\c!height}\relax
+          \the\dimexpr\cut!n!paste!pageparameter\c!voffset
+          +\cut!n!paste!pageparameter{\c!span\c!height}\relax
       \else
-        \cut!n!paste!pageparamter\c!voffset
+        \cut!n!paste!pageparameter\c!voffset
      \fi
      \else
-       \cut!n!paste!pageparamter\c!voffset
+       \cut!n!paste!pageparameter\c!voffset
    \fi}
 
 \def\cut!n!paste!pagewidth
-  {\the\dimexpr\cut!n!paste!pageparamter\c!width
-   /\cut!n!paste!pageparamter\c!n\relax}
+  {\the\dimexpr\cut!n!paste!pageparameter\c!width
+   /\cut!n!paste!pageparameter\c!n\relax}
 
 % Insrert pages
 
 \def\cut!n!paste!insertpage%
   {\ifconditional\cut!n!paste!span
-    \startTEXpage
+   \startTEXpage
       \clip
-        [   \c!width=\cut!n!paste!pageparamter\c!width,
-           \c!height=\cut!n!paste!pageparamter{\c!span\c!height},
-          \c!hoffset=\cut!n!paste!pageparamter\c!hoffset,
+        [   \c!width=\cut!n!paste!pageparameter\c!width,
+           \c!height=\cut!n!paste!pageparameter{\c!span\c!height},
+          \c!hoffset=\cut!n!paste!pageparameter\c!hoffset,
           \c!voffset=\cut!n!paste!span!voffset]
         {\externalfigure[cnp:name][\c!page=\cut!n!paste!currentpage]}
     \stopTEXpage
   \fi
-  \dorecurse{\cut!n!paste!pageparamter\c!n}
-  {\startTEXpage
+  \dorecurse{\cut!n!paste!pageparameter\c!n}
+  {\startTEXpage[\c!background={\v!foreground,cnp:text}]
       \clip
       [   \c!width=\cut!n!paste!pagewidth,
          \c!height=\cut!n!paste!height,
         \c!hoffset=\cut!n!paste!hoffset,
         \c!voffset=\cut!n!paste!voffset]
         {\rotate
-          [\c!rotation=\cut!n!paste!pageparamter\c!rotation]
+          [\c!rotation=\cut!n!paste!pageparameter\c!rotation]
            {\externalfigure[cnp:name][\c!page=\cut!n!paste!currentpage]}}
      \stopTEXpage}}
 
 \def\cut!n!paste!inserttestpage%
-   {\setupMPvariables
-      [cnp:grid]
-      [              \c!width=\cut!n!paste!pageparamter\c!width,
-                    \c!height=\cut!n!paste!height,
-                   \c!hoffset=\cut!n!paste!pageparamter\c!hoffset,
-                   \c!voffset=\cut!n!paste!voffset,
-                         \c!n=\cut!n!paste!pageparamter\c!n,
-              \c!grid\c!color=\cut!n!paste!pageparamter{\c!grid\c!color},
-                \c!framecolor=\cut!n!paste!pageparamter\c!framecolor,
-             \c!rulethickness=\cut!n!paste!pageparamter\c!rulethickness,
-             \c!span\c!height=\cut!n!paste!pageparamter{\c!span\c!height},
-            \c!span\c!voffset=\cut!n!paste!span!voffset,
-         \c!span\c!framecolor=\cut!n!paste!pageparamter{\c!span\c!framecolor},
-      \c!span\c!rulethickness=\cut!n!paste!pageparamter{\c!span\c!rulethickness}]
-   %
-   \startTEXpage[\c!background={\v!foreground,cnp:grid}]
-    \rotate[\c!rotation=\cut!n!paste!pageparamter\c!rotation]
+  {\startTEXpage[\c!background={\v!foreground,cnp:grid,cnp:text}]
+    \rotate[\c!rotation=\cut!n!paste!pageparameter\c!rotation]
       {\externalfigure[cnp:name][\c!page=\cut!n!paste!currentpage]}
    \stopTEXpage}
 
 %D Initialize Parameters
 
 \def\cut!n!paste!initializeparameters
-  {\doifelse{\cut!n!paste!pageparamter\c!span}\v!yes
+  {\doifelse{\cut!n!paste!pageparameter\c!span}\v!yes
     {\settrue\cut!n!paste!span
-     \doifelse{\cut!n!paste!pageparamter{\c!span\c!location}}\v!top
+     \doifelse{\cut!n!paste!pageparameter{\c!span\c!location}}\v!top
       {\settrue\cut!n!paste!topspan}
       {\setfalse\cut!n!paste!topspan}}
-    {\setfalse\cut!n!paste!span}}
+    {\setfalse\cut!n!paste!span}%
+    \setupMPvariables
+      [cnp:grid]
+      [              \c!width=\cut!n!paste!pageparameter\c!width,
+                    \c!height=\cut!n!paste!height,
+                   \c!hoffset=\cut!n!paste!pageparameter\c!hoffset,
+                   \c!voffset=\cut!n!paste!voffset,
+                         \c!n=\cut!n!paste!pageparameter\c!n,
+              \c!grid\c!color=\cut!n!paste!pageparameter{\c!grid\c!color},
+                \c!framecolor=\cut!n!paste!pageparameter\c!framecolor,
+             \c!rulethickness=\cut!n!paste!pageparameter\c!rulethickness,
+             \c!span\c!height=\cut!n!paste!pageparameter{\c!span\c!height},
+            \c!span\c!voffset=\cut!n!paste!span!voffset,
+         \c!span\c!framecolor=\cut!n!paste!pageparameter{\c!span\c!framecolor},
+      \c!span\c!rulethickness=\cut!n!paste!pageparameter{\c!span\c!rulethickness}]%
+    \setupMPvariables
+      [cnp:text]
+      [   \c!text=\cut!n!paste!pageparameter\c!text,
+      \c!location=\cut!n!paste!pageparameter\c!location]}
 
 \def\cut!n!paste!initializepagecount
  {\doifsomethingelse\@@@@cnpstop
@@ -237,9 +246,11 @@
 
 \def\doplacecutNpaste[#1]%
   {\setupcutNpaste[#1]%
-   \useexternalfigure[cnp:name][\@@@@cnpname]%
+   \useexternalfigure[cnp:name][\@@@@cnpname]% Is this really needed?
    \getfiguredimensions[cnp:name]%
-   \edef\cut!n!paste!NOfpages{\noffigurepages}%
+   \edef\cut!n!paste!NOfpages    {\noffigurepages}%
+   \edef\cut!n!paste!figurewidth {\figurewidth   }%
+   \edef\cut!n!paste!figureheight{\figureheight  }%
    \doifelse\@@@@cnpoption\v!test
      \cut!n!paste!placetestpages
      \cut!n!paste!placepages}
@@ -250,8 +261,8 @@
    \c!n=1,
    \c!start=,
    \c!stop=,
-   \c!width=\overlaywidth,
-   \c!height=\overlayheight,
+   \c!width=\cut!n!paste!figurewidth,
+   \c!height=\cut!n!paste!figureheight,
    \c!rotation=\!!zerocount,
    \c!hoffset=\!!zeropoint,
    \c!voffset=\!!zeropoint,
@@ -259,11 +270,13 @@
    \c!framecolor=red,
    \c!rulethickness=1bp,
    \c!span=\v!no,
-   \c!span\c!height=\cut!n!paste!pageparamter\c!height,
+   \c!span\c!height=\cut!n!paste!pageparameter\c!height,
    \c!span\c!location=\v!top,
    \c!span\c!framecolor=blue,
    \c!span\c!rulethickness=1bp,
-   \c!name=]
+   \c!name=,
+   \c!text=,
+   \c!location={(OverlayWidth/2, 1cm)}]
 
 \protect
 \stopmodule
