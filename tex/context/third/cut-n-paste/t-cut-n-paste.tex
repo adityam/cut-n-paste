@@ -241,16 +241,19 @@
      \cut!n!paste!initializeparameters
      \cut!n!paste!inserttestpage}}
 
-\def\placecutNpaste
-  {\dosingleargument\doplacecutNpaste}
+\def\processcutNpaste
+  {\dosingleargument\doprocesscutNpaste}
 
-\def\doplacecutNpaste[#1]%
+\def\doprocesscutNpaste[#1]%
   {\setupcutNpaste[#1]%
    \useexternalfigure[cnp:name][\@@@@cnpname]% Is this really needed?
    \getfiguredimensions[cnp:name]%
    \edef\cut!n!paste!NOfpages    {\noffigurepages}%
-   \edef\cut!n!paste!figurewidth {\figurewidth   }%
-   \edef\cut!n!paste!figureheight{\figureheight  }%
+   % MkII returns dimensions in pt, MkIV returns in sp 
+   % which causes metapost to blow up. So, I use \dimexpr to convert
+   % sp to pt.
+   \edef\cut!n!paste!figurewidth {\the\dimexpr\figurewidth   }%
+   \edef\cut!n!paste!figureheight{\the\dimexpr\figureheight  }%
    \doifelse\@@@@cnpoption\v!test
      \cut!n!paste!placetestpages
      \cut!n!paste!placepages}
