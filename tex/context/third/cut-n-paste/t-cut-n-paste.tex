@@ -1,17 +1,17 @@
 %D \module
-%D   [       file=t-cut-N-paste,
-%D        version=2009.11.10,
+%D   [       file=t-cut-n-paste,
+%D        version=2010.01.28,
 %D          title=Cut and paste pages together,
 %D       subtitle=\CONTEXT\ module,
 %D         author=Aditya Mahajan,
 %D           date=\currentdate,
 %D      copyright=Aditya Mahajan]
 %C
-%C Copyright 2009 Aditya Mahajan 
+%C Copyright 2010 Aditya Mahajan 
 %C This file may be distributed under the GNU General Public License v. 2.0.
 
-\startmodule[cut-N-paste]
-\writestatus{loading}{cut-N-paste module}
+\startmodule[cut-n-paste]
+\writestatus{loading}{cut-n-paste module}
 \unprotect
 
 \setupcolors[state=start]
@@ -81,43 +81,70 @@
 
 %D Name space
 
-\def\????cnp    {@@@@cnp}
-\def\c!span {span}
+\def\??cnp?? {@@cnp@@}
+\def\c!span  {span}
 
-\newconditional\cut!n!paste!span      \setfalse\cut!n!paste!span
+\newconditional\cut!n!paste!span        \setfalse\cut!n!paste!span
 \newconditional\cut!n!paste!topspan     \settrue\cut!n!paste!topspan
 
 %D Parameters
+
+\def\cut!n!paste!parameter#1%
+  {\executeifdefined{\??cnp??::\current!cut!n!paste::#1}
+     {\executeifdefined{\??cnp??#1}{\s!empty}}}
+
 \def\cut!n!paste!pageparameter#1% pagenum parameter
-  {\ifcsname\????cnp\cut!n!paste!currentpage#1\endcsname
-     \csname\????cnp\cut!n!paste!currentpage#1\endcsname
-    \else
-       \ifcsname\????cnp\v!oddeven\cut!n!paste!currentpage#1\endcsname
-         \csname\????cnp\v!oddeven\cut!n!paste!currentpage#1\endcsname
-       \else
-         \ifcsname\????cnp#1\endcsname
-           \csname\????cnp#1\endcsname
-          \else
-            \s!empty
-     \fi\fi\fi}
+  {\executeifdefined{\??cnp??::\current!cut!n!paste::\cut!n!paste!currentpage#1}
+     {\executeifdefined{\??cnp??::\current!cut!n!paste::\v!oddeven\cut!n!paste!currentpage#1}
+        {\executeifdefined{\??cnp??::\current!cut!n!paste::#1}
+           {\executeifdefined{\??cnp??\cut!n!paste!currentpage#1}
+              {\executeifdefined{\??cnp??\v!oddeven\cut!n!paste!currentpage#1}
+                 \executeifdefined{\??cnp??#1}{\s!empty}}}}}}
 
 %D Setup
-\def\setupcutNpaste%
-  {\dodoubleargument\dosetupcutNpaste}
+\def\setupcutNpastes%
+  {\dodoubleargument\dosetupcutNpastes}
 
-\def\dosetupcutNpaste[#1][#2]%
+\def\dosetupcutNpastes[#1][#2]% page options
   {\doifelsenothing{#2}
-    {\getparameters[\????cnp][#1]}
+    {\getparameters[\??cnp??][#1]}
+    {\processaction
+      [#1]
+      [     \v!odd=>{\getparameters[\??cnp??#1][#2]},%
+           \v!even=>{\getparameters[\??cnp??#1][#2]},%
+        \v!unknown=>{\dodosetupcutNpastes[#1][#2]}]}}
+
+\def\dodosetupcutNpastes[#1][#2]% page optios
+  {\def\redosetupcutNpastes##1%
+    {\getparameters[\??cnp??##1][#2]}%
+  \processcommalist[#1]\redosetupcutNpastes}
+
+\def\dosetup!cut!n!paste%
+  {\dotripleargument\dodosetup!cut!n!paste}
+
+\def\dodosetup!cut!n!paste[#1][#2][#3]% name page options
+   {\doifelsenothing{#3}
+    {\getparameters[\??cnp??::#1::][#2]}
     {\processaction
       [#2]
-      [     \v!odd=>{\getparameters[\????cnp#1][#2]},%
-           \v!even=>{\getparameters[\????cnp#1][#2]},%
-        \v!unknown=>{\dodosetupcutNpaste[#1][#2]}]}}
+      [     \v!odd=>{\getparameters[\??cnp??::#1::#2][#3]},%
+           \v!even=>{\getparameters[\??cnp??::#1::#2][#3]},%
+        \v!unknown=>{\dododosetup!cut!n!paste[#1][#2][#3]}]}}
 
-\def\dodosetupcutNpaste[#1][#2]%
-  {\def\redosetupcutNpaste##1%
-    {\getparameters[\????cnp##1][#2]}%
-  \processcommalist[#1]\redosetupcutNpaste}
+\def\dododosetup!cut!n!paste[#1][#2][#3]% name page options
+  {\def\redosetup!cut!n!paste##1%
+    {\getparameters[\??cnp??::#1::##1][#3]}%
+  \processcommalist[#2]\redosetup!cut!n!paste}
+
+%D Define
+
+\def\definecutNpaste
+  {\dosingleargument\dodefinecutNpaste}
+
+\def\dodefinecutNpaste[#1]%[#2][#3]
+  {\setvalue{\e!setup#1}{\dosetup!cut!n!paste[#1]}%
+   \setvalue{process#1}{\doprocess!cut!n!paste[#1]}%
+   \getvalue{\e!setup#1}} %[#2][#3]
 
 %D Expr
 
@@ -218,11 +245,11 @@
       \c!location=\cut!n!paste!pageparameter\c!location]}
 
 \def\cut!n!paste!initializepagecount
- {\doifsomethingelse\@@@@cnpstop
-    {\edef\cut!n!paste!stoppage{\@@@@cnpstop}}
+ {\doifsomethingelse{\cut!n!paste!parameter\c!stop}
+    {\edef\cut!n!paste!stoppage{\cut!n!paste!parameter\c!stop}}
     {\edef\cut!n!paste!stoppage{\cut!n!paste!NOfpages}}%
-  \doifsomethingelse\@@@@cnpstart
-    {\edef\cut!n!paste!startpage{\@@@@cnpstart}}
+  \doifsomethingelse{\cut!n!paste!parameter\c!start}
+    {\edef\cut!n!paste!startpage{\cut!n!paste!parameter\c!start}}
     {\edef\cut!n!paste!startpage{\plusone}}}
 
 %D place pages
@@ -241,12 +268,13 @@
      \cut!n!paste!initializeparameters
      \cut!n!paste!inserttestpage}}
 
-\def\processcutNpaste
-  {\dosingleargument\doprocesscutNpaste}
+\def\doprocess!cut!n!paste
+  {\dodoubleargument\dodoprocess!cut!n!paste}
 
-\def\doprocesscutNpaste[#1]%
-  {\setupcutNpaste[#1]%
-   \useexternalfigure[cnp:name][\@@@@cnpname]% Is this really needed?
+\def\dodoprocess!cut!n!paste[#1][#2]%
+  {\dosetup!cut!n!paste[#1][#2]%
+   \def\current!cut!n!paste{#1}%
+   \useexternalfigure[cnp:name][\cut!n!paste!parameter\c!name]% Is this really needed?
    \getfiguredimensions[cnp:name]%
    \edef\cut!n!paste!NOfpages    {\noffigurepages}%
    % MkII returns dimensions in pt, MkIV returns in sp 
@@ -254,12 +282,13 @@
    % sp to pt.
    \edef\cut!n!paste!figurewidth {\the\dimexpr\figurewidth   }%
    \edef\cut!n!paste!figureheight{\the\dimexpr\figureheight  }%
-   \doifelse\@@@@cnpoption\v!test
-     \cut!n!paste!placetestpages
-     \cut!n!paste!placepages}
+   \doifelse{\cut!n!paste!parameter\c!option}\v!test
+      \cut!n!paste!placetestpages
+      \cut!n!paste!placepages}
 
+\definecutNpaste[cutNpaste]
 
-\setupcutNpaste
+\setupcutNpastes
   [\c!option=,
    \c!n=1,
    \c!start=,
