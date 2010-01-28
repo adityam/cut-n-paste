@@ -286,8 +286,6 @@
       \cut!n!paste!placetestpages
       \cut!n!paste!placepages}
 
-\definecutNpaste[cutNpaste]
-
 \setupcutNpastes
   [\c!option=,
    \c!n=1,
@@ -309,6 +307,14 @@
    \c!name=,
    \c!text=,
    \c!location={(OverlayWidth/2, 1cm)}]
+
+\definecutNpaste[cutNpaste]
+\definecutNpaste[IEEEconf]
+                [\c!n=2,
+                 \c!width=7.1in,  \c!hoffset=0.75in,
+                 \c!height=9.2in, \c!voffset=0.9in]
+
+\setupIEEEconf[1][\c!span=yes,\c!span\c!height=1.9in]
 
 \protect
 \stopmodule
