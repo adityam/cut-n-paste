@@ -91,15 +91,15 @@
 
 \def\cut!n!paste!parameter#1%
   {\executeifdefined{\??cnp??::\current!cut!n!paste::#1}
-     {\executeifdefined{\??cnp??#1}{\s!empty}}}
+     {\executeifdefined{\??cnp??::#1}{}}}
 
 \def\cut!n!paste!pageparameter#1% pagenum parameter
   {\executeifdefined{\??cnp??::\current!cut!n!paste::\cut!n!paste!currentpage#1}
      {\executeifdefined{\??cnp??::\current!cut!n!paste::\v!oddeven\cut!n!paste!currentpage#1}
         {\executeifdefined{\??cnp??::\current!cut!n!paste::#1}
            {\executeifdefined{\??cnp??\cut!n!paste!currentpage#1}
-              {\executeifdefined{\??cnp??\v!oddeven\cut!n!paste!currentpage#1}
-                 \executeifdefined{\??cnp??#1}{\s!empty}}}}}}
+              {\executeifdefined{\??cnp??::\v!oddeven\cut!n!paste!currentpage#1}
+                 \executeifdefined{\??cnp??::#1}{}}}}}}
 
 %D Setup
 \def\setupcutNpastes%
@@ -107,16 +107,16 @@
 
 \def\dosetupcutNpastes[#1][#2]% page options
   {\doifelsenothing{#2}
-    {\getparameters[\??cnp??][#1]}
+    {\getparameters[\??cnp??::][#1]}
     {\processaction
       [#1]
-      [     \v!odd=>{\getparameters[\??cnp??#1][#2]},%
-           \v!even=>{\getparameters[\??cnp??#1][#2]},%
+      [     \v!odd=>{\getparameters[\??cnp??::#1][#2]},%
+           \v!even=>{\getparameters[\??cnp??::#1][#2]},%
         \v!unknown=>{\dodosetupcutNpastes[#1][#2]}]}}
 
 \def\dodosetupcutNpastes[#1][#2]% page optios
   {\def\redosetupcutNpastes##1%
-    {\getparameters[\??cnp??##1][#2]}%
+    {\getparameters[\??cnp??::##1][#2]}%
   \processcommalist[#1]\redosetupcutNpastes}
 
 \def\dosetup!cut!n!paste%
