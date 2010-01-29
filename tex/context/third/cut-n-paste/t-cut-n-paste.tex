@@ -45,16 +45,14 @@
        withcolor \MPcolor{\MPvar\c!framecolor}
        withpen pencircle scaled (2*\MPvar\c!rulethickness) ;
 
-  newpath divider ; 
-  divider := (0,0) -- (0, \MPvar\c!height) ;
-  newnumeric sep ; sep := \MPvar\c!width / \MPvar\c!n ;
+  newpath divider ; divider := (0,0) -- (0, \MPvar\c!height) ;
+  newnumeric sep  ; sep     := \MPvar\c!width / \MPvar\c!n   ;
 
   for i = 1 upto \MPvar\c!n - 1 :
     draw divider
-         shifted (\MPvar\c!hoffset + i*sep, 
-                  OverlayHeight - \MPvar\c!height - \MPvar\c!voffset) 
-     withcolor \MPcolor{\MPvar\c!framecolor}
-     withpen pencircle scaled (2*\MPvar\c!rulethickness) ;
+         shifted (\MPvar\c!hoffset + i*sep, OverlayHeight - \MPvar\c!height - \MPvar\c!voffset) 
+         withcolor \MPcolor{\MPvar\c!framecolor}
+         withpen pencircle scaled (2*\MPvar\c!rulethickness) ;
   endfor 
        
 
@@ -75,8 +73,8 @@
   setbounds currentpicture to OverlayBox ;
 \stopuseMPgraphic
 
-\defineoverlay[cnp:grid]  [\useMPgraphic{cnp:grid}]
-\defineoverlay[cnp:text]  [\useMPgraphic{cnp:text}]
+\defineoverlay[cnp:grid][\useMPgraphic{cnp:grid}]
+\defineoverlay[cnp:text][\useMPgraphic{cnp:text}]
 
 
 %D Name space
@@ -84,8 +82,8 @@
 \def\??cnp?? {@@cnp@@}
 \def\c!span  {span}
 
-\newconditional\cut!n!paste!span        \setfalse\cut!n!paste!span
-\newconditional\cut!n!paste!topspan     \settrue\cut!n!paste!topspan
+\newconditional\cut!n!paste!span    \setfalse\cut!n!paste!span
+\newconditional\cut!n!paste!topspan \settrue\cut!n!paste!topspan
 
 %D Parameters
 
@@ -153,27 +151,27 @@
      \cut!n!paste!pageparameter\c!voffset
    \else
      \the\dimexpr\cut!n!paste!pageparameter\c!voffset
-     +\cut!n!paste!pageparameter\c!height
-     -\cut!n!paste!pageparameter{\c!span\c!height}\relax
+      + \cut!n!paste!pageparameter\c!height
+      - \cut!n!paste!pageparameter{\c!span\c!height}\relax
     \fi}
 
 \def\cut!n!paste!height
   {\ifconditional\cut!n!paste!span
      \the\dimexpr\cut!n!paste!pageparameter\c!height
-     -\cut!n!paste!pageparameter{\c!span\c!height}\relax
+     - \cut!n!paste!pageparameter{\c!span\c!height}\relax
    \else
      \cut!n!paste!pageparameter\c!height
   \fi}
 
 \def\cut!n!paste!hoffset
   {\the\dimexpr\cut!n!paste!pageparameter\c!hoffset
-  +\cut!n!paste!pagewidth*(\recurselevel-1)\relax}
+   + \cut!n!paste!pagewidth*(\recurselevel-1)\relax}
 
 \def\cut!n!paste!voffset
   {\ifconditional\cut!n!paste!span
      \ifconditional\cut!n!paste!topspan
           \the\dimexpr\cut!n!paste!pageparameter\c!voffset
-          +\cut!n!paste!pageparameter{\c!span\c!height}\relax
+          + \cut!n!paste!pageparameter{\c!span\c!height}\relax
       \else
         \cut!n!paste!pageparameter\c!voffset
      \fi
@@ -183,7 +181,7 @@
 
 \def\cut!n!paste!pagewidth
   {\the\dimexpr\cut!n!paste!pageparameter\c!width
-   /\cut!n!paste!pageparameter\c!n\relax}
+   / \cut!n!paste!pageparameter\c!n\relax}
 
 % Insrert pages
 
