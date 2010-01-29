@@ -32,7 +32,7 @@
 \stopMPinclusions
 
 \startuseMPgraphic{cnp:grid}
-  save xaxis, yaxis ; path xaxis, yaxis ;
+  newpath xaxis, yaxis ; 
   xaxis := bottomboundary OverlayBox ;
   yaxis := leftboundary   OverlayBox ;
 
@@ -45,9 +45,9 @@
        withcolor \MPcolor{\MPvar\c!framecolor}
        withpen pencircle scaled (2*\MPvar\c!rulethickness) ;
 
-  save divider ; path divider ;
+  newpath divider ; 
   divider := (0,0) -- (0, \MPvar\c!height) ;
-  save sep ; sep := \MPvar\c!width / \MPvar\c!n ;
+  newnumeric sep ; sep := \MPvar\c!width / \MPvar\c!n ;
 
   for i = 1 upto \MPvar\c!n - 1 :
     draw divider
