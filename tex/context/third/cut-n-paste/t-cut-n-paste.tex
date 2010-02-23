@@ -278,8 +278,8 @@
    % MkII returns dimensions in pt, MkIV returns in sp 
    % which causes metapost to blow up. So, I use \dimexpr to convert
    % sp to pt.
-   \edef\cut!n!paste!figurewidth {\the\dimexpr\figurewidth   }%
-   \edef\cut!n!paste!figureheight{\the\dimexpr\figureheight  }%
+   \edef\cut!n!paste!figurewidth {\the\dimexpr\figurenaturalwidth   }%
+   \edef\cut!n!paste!figureheight{\the\dimexpr\figurenaturalheight  }%
    \doifelse{\cut!n!paste!parameter\c!option}\v!test
       \cut!n!paste!placetestpages
       \cut!n!paste!placepages}
