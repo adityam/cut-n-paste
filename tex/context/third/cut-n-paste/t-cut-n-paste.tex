@@ -248,24 +248,20 @@
     {\edef\cut!n!paste!stoppage{\cut!n!paste!NOfpages}}%
   \doifsomethingelse{\cut!n!paste!parameter\c!start}
     {\edef\cut!n!paste!startpage{\cut!n!paste!parameter\c!start}}
-    {\edef\cut!n!paste!startpage{\plusone}}%
-  \def\cut!n!paste!increment{\plusone}%
-  \doif{\cut!n!paste!parameter\c!alternative}\v!reverse  
-   {\swapmacros\cut!n!paste!startpage\cut!n!paste!stoppage
-    \def\cut!n!paste!increment{\minusone}}}
+    {\edef\cut!n!paste!startpage{\plusone}}}
 
 %D place pages
 
 \def\cut!n!paste!placepages
   {\cut!n!paste!initializepagecount
-   \dostepwiserecurse\cut!n!paste!startpage\cut!n!paste!stoppage\cut!n!paste!increment
+   \dostepwiserecurse\cut!n!paste!startpage\cut!n!paste!stoppage\plusone
     {\edef\cut!n!paste!currentpage{\recurselevel}%
      \cut!n!paste!initializeparameters
      \cut!n!paste!insertpage}}
 
 \def\cut!n!paste!placetestpages
   {\cut!n!paste!initializepagecount
-   \dostepwiserecurse\cut!n!paste!startpage\cut!n!paste!stoppage\plusone %not \cut!n!paste!increment
+   \dostepwiserecurse\cut!n!paste!startpage\cut!n!paste!stoppage\plusone
     {\edef\cut!n!paste!currentpage{\recurselevel}%
      \cut!n!paste!initializeparameters
      \cut!n!paste!inserttestpage}}
@@ -290,7 +286,6 @@
 
 \setupcutNpastes
   [\c!option=,
-   \c!alternative=\v!normal,
    \c!n=1,
    \c!start=,
    \c!stop=,
@@ -314,27 +309,10 @@
 \definecutNpaste[cutNpaste]
 \definecutNpaste[IEEEconf]
                 [\c!n=2,
-                 \c!width=44pc,    
-                 \c!height=\the\dimexpr 9.25in + 18pt\relax,
-                 \c!hoffset=\the\dimexpr 0.68in - 0.5pc\relax,
-                 \c!voffset=\the\dimexpr 0.5in + 12pt\relax]
+                 \c!width=7.1in,  \c!hoffset=0.75in,
+                 \c!height=9.2in, \c!voffset=0.9in]
 
-\setupIEEEconf[1][\c!span=yes,\c!span\c!height=2in]
-
-\definecutNpaste[IEEEjournal]
-                [\c!n=2,
-                 \c!width=44pc,    
-                 \c!height=\the\dimexpr 58pc + 18pt\relax,
-                 \c!hoffset=\the\dimexpr 0.68in - 1.5pc\relax,
-                 \c!voffset=\the\dimexpr 1in - 49pt + 12pt + 0.25in \relax]
-
-\setupIEEEconf[1][\c!span=yes,\c!span\c!height=2in]
-
-\startmode[IEEEconf]
-  \starttext
-    \processIEEEconf[name=\jobname]
-  \stoptext
-\stopmode
+\setupIEEEconf[1][\c!span=yes,\c!span\c!height=1.9in]
 
 \protect
 \stopmodule
