@@ -271,7 +271,9 @@
 
 \def\dodoprocess!cut!n!paste[#1][#2]%
   {\dosetup!cut!n!paste[#1][#2]%
+   \pushmacro\current!cut!n!paste
    \def\current!cut!n!paste{#1}%
+   \cut!n!paste!parameter\c!before
    \useexternalfigure[cnp:name][\cut!n!paste!parameter\c!name]% Is this really needed?
    \getfiguredimensions[cnp:name]%
    \edef\cut!n!paste!NOfpages    {\noffigurepages}%
@@ -282,7 +284,9 @@
    \edef\cut!n!paste!figureheight{\the\dimexpr\figurenaturalheight  }%
    \doifelse{\cut!n!paste!parameter\c!option}\v!test
       \cut!n!paste!placetestpages
-      \cut!n!paste!placepages}
+      \cut!n!paste!placepages
+   \cut!n!paste!parameter\c!after
+   \popmacro\current!cut!n!paste}
 
 \setupcutNpastes
   [\c!option=,
@@ -304,7 +308,9 @@
    \c!span\c!rulethickness=1bp,
    \c!name=,
    \c!text=,
-   \c!location={(OverlayWidth/2, 1cm)}]
+   \c!location={(OverlayWidth/2, 1cm)},
+   \c!before=,
+   \c!after=,]
 
 \definecutNpaste[cutNpaste]
 \definecutNpaste[IEEEconf]
@@ -313,6 +319,22 @@
                  \c!height=9.2in, \c!voffset=0.9in]
 
 \setupIEEEconf[1][\c!span=yes,\c!span\c!height=1.9in]
+
+\definecutNpaste[AMSnotices]
+                [\c!n=2,
+                \c!width=6.4in, \c!height=9.4in,
+                \c!hoffset=1.4in, \c!voffset=1in,
+                \c!before=\processAMSnoticestitle]
+
+\setupAMSnotices[even][\c!hoffset=0.5in]
+\setupAMSnotices[1][\c!height=6.4in, \c!voffset=4in]
+
+\definecutNpaste[AMSnoticestitle]
+                [\c!start=1,\c!stop=1,
+                 \c!voffset=1in, \c!hoffset=0.3in,
+                 \c!width=6.9in, \c!height=2in,
+                 \c!name=\getvalue{\??cnp??::AMSnotices::\c!name}]
+
 
 \protect
 \stopmodule
